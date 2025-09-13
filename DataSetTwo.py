@@ -7,6 +7,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import os
+
+# ---------------- Save Plots Utility ----------------
+plot_counter = 1
+def save_plot(title="plot", folder="plots"):
+    """
+    Saves the current matplotlib figure into a folder with an auto-incrementing filename.
+    """
+    global plot_counter
+    os.makedirs(folder, exist_ok=True)  # create folder if not exists
+    filename = os.path.join(folder, f"{title}_{plot_counter}.png")
+    plt.savefig(filename, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"[SAVED] {filename}")
+    plot_counter += 1
 
 #----------------------------------------------------Convert Data to csv----------------------------------------------------------
 columns = [
@@ -63,7 +78,7 @@ for col in num_cols:
     sns.histplot(df[col].dropna(), kde=True, bins=30)
     plt.title(f"Distribution of {col}")
     plt.tight_layout()
-    plt.show()
+    save_plot(f"distribution_{col}", folder="plots_before_Q2")
 
 # Step 3: Bar plots (categorical features)
 cat_cols = df.select_dtypes(include=["object"]).columns.tolist()
@@ -74,7 +89,7 @@ for col in cat_cols:
     sns.barplot(x=vc.values, y=vc.index, color="skyblue")
     plt.title(f"Top categories in {col}")
     plt.tight_layout()
-    plt.show()
+    save_plot(f"barplot_{col}", folder="plots_before_Q2")
 
 # Step 4: Boxplots for outlier detection
 plt.figure(figsize=(12, 6))
@@ -86,14 +101,14 @@ sns.boxplot(
 )
 plt.title("Boxplots of Numeric Features (Outlier Detection)")
 plt.tight_layout()
-plt.show()
+save_plot(f"boxplot_{col}", folder="plots_before_Q2")
 
 # Step 5: Correlation Heatmap
 plt.figure(figsize=(10, 8))
 sns.heatmap(df.corr(numeric_only=True), annot=False, cmap="coolwarm")
 plt.title("Correlation Heatmap (Numerical Features)")
 plt.tight_layout()
-plt.show()
+save_plot(f"corplot_{col}", folder="plots_before_Q2")
 
 #-------------------------------------------------------PREPROCESSING-------------------------------------------------------------
 DATA_PATH = "census_income.csv"
@@ -192,7 +207,7 @@ for col in num_cols:
     sns.histplot(df[col].dropna(), kde=True, bins=30)
     plt.title(f"Distribution of {col}")
     plt.tight_layout()
-    plt.show()
+    save_plot(f"distributionplot_{col}", folder="plots_after_Q2")
 
 # Boxplots
 plt.figure(figsize=(12, 6))
@@ -200,10 +215,10 @@ sns.boxplot(data=df[num_cols], orient="h", palette="Set2",
             flierprops={"marker": "o", "color": "red", "alpha": 0.5})
 plt.title("Boxplots of Numeric Features (Outlier Detection)")
 plt.tight_layout()
-plt.show()
+save_plot(f"boxplot_{col}", folder="plots_after_Q2")
 
 # Correlation heatmap
 plt.figure(figsize=(10, 8))
 sns.heatmap(df.corr(numeric_only=True), annot=False, cmap="coolwarm")
 plt.title("Correlation Heatmap (Numerical Features)")
-plt.show()
+save_plot(f"corplot_{col}", folder="plots_after_Q2")
